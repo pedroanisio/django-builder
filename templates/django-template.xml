@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<django_project>
+    <name>myproject</name>
+    <app>
+        <name>myapp</name>
+        <entities>
+            <entity>
+                <name>User</name>
+                <fields>
+                    <field>
+                        <name>username</name>
+                        <type>CharField</type>
+                        <max_length>100</max_length>
+                    </field>
+                    <field>
+                        <name>email</name>
+                        <type>EmailField</type>
+                    </field>
+                </fields>
+            </entity>
+            <entity>
+                <name>Profile</name>
+                <fields>
+                    <field>
+                        <name>user</name>
+                        <type>OneToOneField</type>
+                        <reference>User</reference>
+                    </field>
+                    <field>
+                        <name>bio</name>
+                        <type>TextField</type>
+                    </field>
+                </fields>
+            </entity>
+        </entities>
+    </app>
+</django_project>
