@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    
+    <!-- Field Definition -->
+    <xs:complexType name="fieldType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="type">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="CharField"/>
+                        <xs:enumeration value="TextField"/>
+                        <xs:enumeration value="EmailField"/>
+                        <xs:enumeration value="IntegerField"/>
+                        <xs:enumeration value="BooleanField"/>
+                        <xs:enumeration value="DateTimeField"/>
+                        <xs:enumeration value="OneToOneField"/>
+                        <xs:enumeration value="ForeignKey"/>
+                        <xs:enumeration value="ManyToManyField"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="max_length" type="xs:integer" minOccurs="0"/>
+            <xs:element name="reference" type="xs:string" minOccurs="0"/>
+            <xs:element name="related_name" type="xs:string" minOccurs="0"/>
+            <xs:element name="null" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="blank" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="default" type="xs:string" minOccurs="0"/>
+            <xs:element name="unique" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Entity Definition -->
+    <xs:complexType name="entityType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="fields">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="field" type="fieldType" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="meta" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ordering" type="xs:string" minOccurs="0"/>
+                        <xs:element name="verbose_name" type="xs:string" minOccurs="0"/>
+                        <xs:element name="verbose_name_plural" type="xs:string" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- App Definition -->
+    <xs:complexType name="appType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="entities">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="entity" type="entityType" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Root Element -->
+    <xs:element name="django_project">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="app" type="appType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema> 

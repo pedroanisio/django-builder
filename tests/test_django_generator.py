@@ -1,14 +1,16 @@
 import os
 import pytest
+import sys
+from io import StringIO
 try:
-    from src.django_generator import DjangoProjectGenerator
+    from src.django_generator import DjangoProjectGenerator, main
     from src.config import (
         DJANGO_VERSION,
         DRF_VERSION,
         DOCKER_IMAGE
     )
 except ImportError:
-    from django_generator import DjangoProjectGenerator
+    from django_generator import DjangoProjectGenerator, main
     from config import (
         DJANGO_VERSION,
         DRF_VERSION,
@@ -102,4 +104,45 @@ def test_project_generation_with_existing_dirs(existing_project, xml_file):
         assert (project_dir / "testapp").exists()
         
     finally:
-        os.chdir(original_dir) 
+        os.chdir(original_dir)
+
+
+def test_help_flag(capsys):
+    """Test that -h or --help flags show help message"""
+    # Test with -h
+    sys.argv = ['django_generator.py', '-h']
+    with pytest.raises(SystemExit) as e:
+        main()
+    assert e.value.code == 0
+    captured = capsys.readouterr()
+    assert "Usage:" in captured.out
+    assert "Options:" in captured.out
+
+    # Test with --help
+    sys.argv = ['django_generator.py', '--help']
+    with pytest.raises(SystemExit) as e:
+        main()
+    assert e.value.code == 0
+    captured = capsys.readouterr()
+    assert "Usage:" in captured.out
+    assert "Options:" in captured.out
+
+
+def test_no_arguments(capsys):
+    """Test that running without arguments shows help message"""
+    sys.argv = ['django_generator.py']
+    with pytest.raises(SystemExit) as e:
+        main()
+    assert e.value.code == 0
+    captured = capsys.readouterr()
+    assert "Usage:" in captured.out
+    assert "Options:" in captured.out
+
+
+def test_invalid_file(caplog):
+    """Test that invalid file path exits with error"""
+    sys.argv = ['django_generator.py', 'nonexistent.xml']
+    with pytest.raises(SystemExit) as e:
+        main()
+    assert e.value.code == 1
+    assert "Template file not found" in caplog.text 

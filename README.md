@@ -1,3 +1,4 @@
+
 # Django Project Generator
 
 A command-line tool that generates a fully configured Django project from an XML template file.
@@ -26,3 +27,84 @@ A command-line tool that generates a fully configured Django project from an XML
 
 ## Input File Format
 The generator expects an XML file with the following structure:
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message
+Modified File:
+Django Project Generator
+
+Usage:
+    django_generator.py <input_file>
+    django_generator.py (-h | --help)
+
+Options:
+    -h --help     Show this help message

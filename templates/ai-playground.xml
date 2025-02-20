@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<django_project>
+  <name>OpenAI_Playground</name>
+  
+  <!-- Interaction Context: Sessions, Prompts, Responses, and Model Parameters -->
+  <app>
+    <name>interaction</name>
+    <entities>
+      
+      <!-- Session Model -->
+      <entity>
+        <name>Session</name>
+        <fields>
+          <field>
+            <name>id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>user_id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+          </field>
+          <field>
+            <name>active_model</name>
+            <type>CharField</type>
+            <max_length>50</max_length>
+          </field>
+          <field>
+            <name>parameter_set_id</name>
+            <type>ForeignKey</type>
+            <reference>ModelParameters</reference>
+          </field>
+          <field>
+            <name>status</name>
+            <type>CharField</type>
+            <max_length>20</max_length>
+            <default>active</default>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Session</verbose_name>
+          <verbose_name_plural>Sessions</verbose_name_plural>
+        </meta>
+      </entity>
+      
+      <!-- Prompt Model -->
+      <entity>
+        <name>Prompt</name>
+        <fields>
+          <field>
+            <name>id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>session_id</name>
+            <type>ForeignKey</type>
+            <reference>Session</reference>
+          </field>
+          <field>
+            <name>text</name>
+            <type>TextField</type>
+          </field>
+          <field>
+            <name>timestamp</name>
+            <type>DateTimeField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Prompt</verbose_name>
+          <verbose_name_plural>Prompts</verbose_name_plural>
+        </meta>
+      </entity>
+      
+      <!-- Response Model -->
+      <entity>
+        <name>Response</name>
+        <fields>
+          <field>
+            <name>id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>prompt_id</name>
+            <type>ForeignKey</type>
+            <reference>Prompt</reference>
+          </field>
+          <field>
+            <name>text</name>
+            <type>TextField</type>
+          </field>
+          <field>
+            <name>tokens_used</name>
+            <type>IntegerField</type>
+          </field>
+          <field>
+            <name>timestamp</name>
+            <type>DateTimeField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Response</verbose_name>
+          <verbose_name_plural>Responses</verbose_name_plural>
+        </meta>
+      </entity>
+      
+      <!-- ModelParameters Model -->
+      <entity>
+        <name>ModelParameters</name>
+        <fields>
+          <field>
+            <name>id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>temperature</name>
+            <type>CharField</type>
+            <max_length>5</max_length>
+          </field>
+          <field>
+            <name>max_tokens</name>
+            <type>IntegerField</type>
+          </field>
+          <field>
+            <name>top_p</name>
+            <type>CharField</type>
+            <max_length>5</max_length>
+          </field>
+          <field>
+            <name>frequency_penalty</name>
+            <type>CharField</type>
+            <max_length>5</max_length>
+          </field>
+          <field>
+            <name>presence_penalty</name>
+            <type>CharField</type>
+            <max_length>5</max_length>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Model Parameter</verbose_name>
+          <verbose_name_plural>Model Parameters</verbose_name_plural>
+        </meta>
+      </entity>
+      
+    </entities>
+  </app>
+  
+  <!-- Model Management Context: AI Models -->
+  <app>
+    <name>model_management</name>
+    <entities>
+      
+      <!-- Model Model -->
+      <entity>
+        <name>Model</name>
+        <fields>
+          <field>
+            <name>model_id</name>
+            <type>CharField</type>
+            <max_length>20</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>name</name>
+            <type>CharField</type>
+            <max_length>50</max_length>
+          </field>
+          <field>
+            <name>version</name>
+            <type>CharField</type>
+            <max_length>10</max_length>
+          </field>
+          <field>
+            <name>maximum_context_size</name>
+            <type>IntegerField</type>
+          </field>
+          <field>
+            <name>capabilities</name>
+            <type>TextField</type>
+          </field>
+          <field>
+            <name>cost_per_token</name>
+            <type>IntegerField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Model</verbose_name>
+          <verbose_name_plural>Models</verbose_name_plural>
+        </meta>
+      </entity>
+      
+    </entities>
+  </app>
+  
+  <!-- User Management & Usage Context -->
+  <app>
+    <name>user_management</name>
+    <entities>
+      
+      <!-- User Model -->
+      <entity>
+        <name>User</name>
+        <fields>
+          <field>
+            <name>user_id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>email</name>
+            <type>EmailField</type>
+            <max_length>100</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>subscription_plan</name>
+            <type>CharField</type>
+            <max_length>20</max_length>
+          </field>
+          <field>
+            <name>api_key</name>
+            <type>CharField</type>
+            <max_length>50</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>usage_quota</name>
+            <type>IntegerField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>User</verbose_name>
+          <verbose_name_plural>Users</verbose_name_plural>
+        </meta>
+      </entity>
+      
+      <!-- UsageRecord Model -->
+      <entity>
+        <name>UsageRecord</name>
+        <fields>
+          <field>
+            <name>record_id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>user_id</name>
+            <type>ForeignKey</type>
+            <reference>User</reference>
+          </field>
+          <field>
+            <name>session_id</name>
+            <type>ForeignKey</type>
+            <reference>Session</reference>
+          </field>
+          <field>
+            <name>tokens_used</name>
+            <type>IntegerField</type>
+          </field>
+          <field>
+            <name>timestamp</name>
+            <type>DateTimeField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>Usage Record</verbose_name>
+          <verbose_name_plural>Usage Records</verbose_name_plural>
+        </meta>
+      </entity>
+      
+    </entities>
+  </app>
+  
+  <!-- API Integration Context -->
+  <app>
+    <name>api_integration</name>
+    <entities>
+      
+      <!-- APIConfiguration Model -->
+      <entity>
+        <name>APIConfiguration</name>
+        <fields>
+          <field>
+            <name>configuration_id</name>
+            <type>CharField</type>
+            <max_length>36</max_length>
+            <unique>true</unique>
+          </field>
+          <field>
+            <name>user_id</name>
+            <type>ForeignKey</type>
+            <reference>User</reference>
+          </field>
+          <field>
+            <name>model_parameters_id</name>
+            <type>ForeignKey</type>
+            <reference>ModelParameters</reference>
+          </field>
+          <field>
+            <name>generated_code_snippets</name>
+            <type>TextField</type>
+          </field>
+        </fields>
+        <meta>
+          <verbose_name>API Configuration</verbose_name>
+          <verbose_name_plural>API Configurations</verbose_name_plural>
+        </meta>
+      </entity>
+      
+    </entities>
+  </app>
+  
+</django_project>

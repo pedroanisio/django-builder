@@ -226,17 +226,7 @@ DATABASES = {{
             f.write(settings_content + additional_settings)
 
     def _generate_models(self) -> None:
-        """
-        Generate model files for each entity defined in the XML template.
-        
-        Creates:
-        - Individual model files in the models directory
-        - __init__.py file with imports for all models
-        
-        Raises:
-            ValueError: If field type is not supported
-            IOError: If file creation fails
-        """
+        """Generate model files for each entity defined in the XML template."""
         models_init = []
         
         for entity in self.entities:
@@ -245,6 +235,7 @@ DATABASES = {{
             
             model_content = f'''
 from django.db import models
+from django.utils import timezone
 
 class {entity_name}(models.Model):
 '''
@@ -253,29 +244,62 @@ class {entity_name}(models.Model):
                 field_name = field.find('name').text
                 field_type = field.find('type').text
                 
+                # Handle different field types
                 if field_type == 'CharField':
                     max_length = field.find('max_length').text
-                    model_content += f"    {field_name} = models.{field_type}(max_length={max_length})\n"
-                elif field_type == 'OneToOneField':
+                    unique = field.find('unique')
+                    unique_str = ', unique=True' if unique is not None and unique.text.lower() == 'true' else ''
+                    primary_key_str = ', primary_key=True' if field_name == 'id' else ''
+                    model_content += f"    {field_name} = models.{field_type}(max_length={max_length}{unique_str}{primary_key_str})\n"
+                
+                elif field_type in ['ForeignKey', 'OneToOneField', 'ManyToManyField']:
                     reference = field.find('reference').text
-                    model_content += f"    {field_name} = models.{field_type}('{reference}', on_delete=models.CASCADE)\n"
+                    related_name = field.find('related_name')
+                    related_name_str = f", related_name='{related_name.text}'" if related_name is not None else ""
+                    
+                    if field_type in ['ForeignKey', 'OneToOneField']:
+                        model_content += f"    {field_name} = models.{field_type}('{reference}', on_delete=models.CASCADE{related_name_str})\n"
+                    else:
+                        model_content += f"    {field_name} = models.{field_type}('{reference}'{related_name_str})\n"
+                
+                elif field_type == 'DateTimeField':
+                    default = field.find('default')
+                    if default is not None and default.text == 'timezone.now':
+                        model_content += f"    {field_name} = models.{field_type}(default=timezone.now)\n"
+                    else:
+                        model_content += f"    {field_name} = models.{field_type}()\n"
+                
                 else:
-                    model_content += f"    {field_name} = models.{field_type}()\n"
+                    primary_key_str = ', primary_key=True' if field_name == 'id' else ''
+                    model_content += f"    {field_name} = models.{field_type}(){primary_key_str}\n"
             
+            # Add Meta class if needed
+            meta = entity.find('meta')
+            if meta is not None:
+                model_content += "\n    class Meta:\n"
+                verbose_name = meta.find('verbose_name')
+                verbose_name_plural = meta.find('verbose_name_plural')
+                
+                if verbose_name is not None:
+                    model_content += f"        verbose_name = '{verbose_name.text}'\n"
+                if verbose_name_plural is not None:
+                    model_content += f"        verbose_name_plural = '{verbose_name_plural.text}'\n"
+            
+            # Add string representation
             model_content += '''
     def __str__(self):
         return str(self.id)
 '''
             
             # Write model file
-            with open(f'{self.app_name}/models/{entity_name.lower()}.py', 'w') as f:
-                f.write(model_content.strip())
+            model_path = Path(self.app_name) / 'models' / f'{entity_name.lower()}.py'
+            self._write_file(model_path, model_content)
             
             models_init.append(f'from .{entity_name.lower()} import {entity_name}')
         
         # Update models/__init__.py
-        with open(f'{self.app_name}/models/__init__.py', 'w') as f:
-            f.write('\n'.join(models_init))
+        init_path = Path(self.app_name) / 'models' / '__init__.py'
+        self._write_file(init_path, '\n'.join(models_init))
 
     def _generate_serializers(self):
         """Generate serializer files for each entity"""
